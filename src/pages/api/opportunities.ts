@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { SupabaseManager } from '../../lib/supabase.js';
+import { SupabaseManager } from '../../lib/supabase';
 
 export const GET: APIRoute = async ({ url }) => {
   try {

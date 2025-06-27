@@ -1,6 +1,6 @@
-import { Stock, Opportunity, SectorData, CryptoData } from '../types/index.js';
-import { SupabaseManager } from './supabase.js';
-import { fetchAsxStock, fetchCryptoPrice, fetchSectorETF, parseYahooFinanceData } from './data-sources.js';
+import { Stock, Opportunity, SectorData, CryptoData } from '../types/index';
+import { SupabaseManager } from './supabase';
+import { fetchAsxStock, fetchCryptoPrice, fetchSectorETF, parseYahooFinanceData } from './data-sources';
 
 // AI-Aware Scoring System
 export class AIAwareScoring {

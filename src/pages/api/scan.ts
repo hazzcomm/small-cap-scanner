@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { OpportunityScanner } from '../../lib/scanners.js';
-import { SupabaseManager } from '../../lib/supabase.js';
+import { OpportunityScanner } from '../../lib/scanners';
+import { SupabaseManager } from '../../lib/supabase';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
