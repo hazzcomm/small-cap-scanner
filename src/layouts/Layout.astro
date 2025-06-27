@@ -1,0 +1,98 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Small Cap Opportunity Scanner - Find undervalued ASX stocks with AI-aware analysis" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="h-full bg-gray-50">
+    <div class="min-h-full">
+      <!-- Navigation -->
+      <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16">
+            <div class="flex">
+              <div class="flex-shrink-0 flex items-center">
+                <h1 class="text-xl font-bold text-gray-900">Small Cap Scanner</h1>
+              </div>
+              <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                <a href="/" class="border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                  Dashboard
+                </a>
+                <a href="/opportunities" class="border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                  Opportunities
+                </a>
+                <a href="/portfolio" class="border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                  Portfolio
+                </a>
+                <a href="/alerts" class="border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                  Alerts
+                </a>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <button id="scan-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Run Scan
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <slot />
+      </main>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="flex items-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+          <span class="text-lg font-medium">Scanning markets...</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global scan functionality
+      document.getElementById('scan-btn')?.addEventListener('click', async () => {
+        const overlay = document.getElementById('loading-overlay');
+        overlay?.classList.remove('hidden');
+        
+        try {
+          const response = await fetch('/api/scan', { method: 'POST' });
+          if (response.ok) {
+            // Refresh page to show new opportunities
+            window.location.reload();
+          } else {
+            console.error('Scan failed');
+          }
+        } catch (error) {
+          console.error('Scan error:', error);
+        } finally {
+          overlay?.classList.add('hidden');
+        }
+      });
+
+      // Auto-refresh data every 5 minutes
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          window.location.reload();
+        }
+      }, 300000);
+    </script>
+  </body>
+</html>
