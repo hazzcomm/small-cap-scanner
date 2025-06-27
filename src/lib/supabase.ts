@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Stock, Opportunity, Alert } from '../types/index.js';
+import type { Stock, Opportunity, Alert } from '../types/index';
 
 // Initialize Supabase client
-const supabaseUrl = import.meta.env.SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseKey = import.meta.env.SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseKey = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE4NTc2NDcsImV4cCI6MTk4NzQzMzY0N30.placeholder';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
