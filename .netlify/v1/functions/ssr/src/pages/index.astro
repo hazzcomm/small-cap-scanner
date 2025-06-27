@@ -1,0 +1,264 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getActiveOpportunities, getUnreadAlerts, staticMarketData } from '../lib/static-data';
+
+// Get recent opportunities and alerts
+const opportunities = getActiveOpportunities(6);
+const alerts = getUnreadAlerts(5);
+
+// Use static market data
+const marketSummary = staticMarketData;
+---
+
+<Layout title="Small Cap Scanner - Dashboard">
+  <div class="px-4 py-6 sm:px-0">
+    <!-- Market Summary -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Market Overview</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-medium">ASX</span>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">ASX All Ords</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {marketSummary.asxAll.change > 0 ? '+' : ''}{marketSummary.asxAll.change}%
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm text-gray-600">
+                      Vol: {marketSummary.asxAll.volume}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-medium">SC</span>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Small Caps</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {marketSummary.smallCaps.change > 0 ? '+' : ''}{marketSummary.smallCaps.change}%
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm text-gray-600">
+                      Vol: {marketSummary.smallCaps.volume}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-medium">₿</span>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Crypto</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-lg font-semibold text-gray-900">
+                      BTC: +{marketSummary.crypto.btc}%
+                    </div>
+                    <div class="ml-2 text-sm text-gray-600">
+                      ETH: +{marketSummary.crypto.eth}%
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Opportunities -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-900">Top Opportunities</h2>
+        <a href="/opportunities" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+          View all →
+        </a>
+      </div>
+
+      {opportunities.length === 0 ? (
+        <div class="bg-white shadow rounded-lg p-6 text-center">
+          <div class="text-gray-500 mb-4">
+            <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No opportunities found</h3>
+          <p class="text-gray-500 mb-4">Run a scan to identify potential trading opportunities</p>
+          <button id="scan-dashboard" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            Run Initial Scan
+          </button>
+        </div>
+      ) : (
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+          <ul class="divide-y divide-gray-200">
+            {opportunities.map((opp) => (
+              <li>
+                <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                        <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          opp.type === 'sector_laggard' ? 'bg-blue-100 text-blue-800' :
+                          opp.type === 'crypto_correlation' ? 'bg-yellow-100 text-yellow-800' :
+                          opp.type === 'oversold' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {opp.type.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <div class="ml-4">
+                        <div class="flex items-center">
+                          <div class="text-sm font-medium text-gray-900">
+                            {opp.symbol}
+                          </div>
+                          <div class={`ml-2 text-sm ${
+                            opp.riskLevel === 'low' ? 'text-green-600' :
+                            opp.riskLevel === 'medium' ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {opp.riskLevel} risk
+                          </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                          {opp.description}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <div class="text-right mr-4">
+                        <div class="text-sm font-medium text-gray-900">
+                          AI Score: {Math.round(opp.aiAwareScore)}
+                        </div>
+                        <div class="text-sm text-gray-500">
+                          {opp.timeframe}
+                        </div>
+                      </div>
+                      <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <div class="text-sm text-gray-500">
+                      <strong>Triggers:</strong> {opp.triggers.join(' • ')}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    <!-- Recent Alerts -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-900">Recent Alerts</h2>
+        <a href="/alerts" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+          View all →
+        </a>
+      </div>
+
+      {alerts.length === 0 ? (
+        <div class="bg-white shadow rounded-lg p-6 text-center text-gray-500">
+          No recent alerts
+        </div>
+      ) : (
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+          <ul class="divide-y divide-gray-200">
+            {alerts.map((alert) => (
+              <li>
+                <div class="px-4 py-4 sm:px-6">
+                  <div class="flex items-center">
+                    <div class={`flex-shrink-0 w-2 h-2 rounded-full ${
+                      alert.severity === 'critical' ? 'bg-red-400' :
+                      alert.severity === 'warning' ? 'bg-yellow-400' :
+                      'bg-blue-400'
+                    }`}></div>
+                    <div class="ml-3">
+                      <div class="text-sm font-medium text-gray-900">
+                        {alert.title}
+                      </div>
+                      <div class="text-sm text-gray-500">
+                        {alert.message}
+                      </div>
+                    </div>
+                    <div class="ml-auto text-sm text-gray-400">
+                      {new Date(alert.created).toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    <!-- AI Trading Insights -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">
+            AI-Aware Trading Intelligence
+          </h3>
+          <div class="mt-2 text-sm text-blue-700">
+            <p>This scanner uses AI-aware scoring to identify opportunities that human traders can capitalize on before algorithmic trading systems. Focus on multi-day opportunities in small caps where AI has limited penetration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dashboard-specific scan button
+    document.getElementById('scan-dashboard')?.addEventListener('click', async () => {
+      const overlay = document.getElementById('loading-overlay');
+      overlay?.classList.remove('hidden');
+      
+      try {
+        const response = await fetch('/api/scan', { method: 'POST' });
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Scan error:', error);
+      } finally {
+        overlay?.classList.add('hidden');
+      }
+    });
+  </script>
+</Layout>
